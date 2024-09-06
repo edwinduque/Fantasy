@@ -1,0 +1,31 @@
+﻿@page "/countries"
+<h3>Paises</h3>
+    <GenericList Items="Countries">
+        <Body>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <td>País</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var country in Countries)
+                    {
+                        <tr>
+                            <td>@country.Name</td>
+                            <td>
+                                <a class="btn btn-warning">Editar</a>
+                                <button class="btn btn-danger">Borrar</button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </Body>
+    </GenericList>
+
+
+
+
+
+
