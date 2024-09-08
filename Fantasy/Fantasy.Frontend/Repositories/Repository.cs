@@ -19,6 +19,12 @@ public class Repository : IRepository
             PropertyNameCaseInsensitive = true
         };
 
+    public async Task<HttpResponseWrapper<object>> DeleteAsync(string url)
+    {
+        var responseHttp = _httpClient.DeleteAsync(url);
+        return new HttpResponseWrapper<object>(null, !responseHttp.Result.IsSuccessStatusCode, responseHttp.Result);
+    }
+
     public async Task<HttpResponseWrapper<T>> GetAsync<T>(string url)
     {
         var responseHttp = await _httpClient.GetAsync(url);
@@ -50,6 +56,27 @@ public class Repository : IRepository
             return new HttpResponseWrapper<TActionResponse>(response, false, responseHttp);
         }
         return new HttpResponseWrapper<TActionResponse>(default, !responseHttp.IsSuccessStatusCode, responseHttp);
+    }
+
+    public async Task<HttpResponseWrapper<object>> PutAsync<T>(string url, T model)
+    {
+        var messageJson = JsonSerializer.Serialize(model);
+        var messageContent = new StringContent(messageJson, Encoding.UTF8, "application/json");
+        var responseHttp = _httpClient.PutAsync(url, messageContent);
+        return new HttpResponseWrapper<object>(null, !responseHttp.Result.IsSuccessStatusCode, responseHttp.Result);
+    }
+
+    public async Task<HttpResponseWrapper<TActionResponse>> PutAsync<T, TActionResponse>(string url, T model)
+    {
+        var messageJson = JsonSerializer.Serialize(model);
+        var messageContent = new StringContent(messageJson, Encoding.UTF8, "application/json");
+        var responseHttp = _httpClient.PutAsync(url, messageContent);
+        if (responseHttp.Result.IsSuccessStatusCode)
+        {
+            var response = await UnserializeAnswer<TActionResponse>(responseHttp.Result);
+            return new HttpResponseWrapper<TActionResponse>(response, false, responseHttp.Result);
+        }
+        return new HttpResponseWrapper<TActionResponse>(default, !responseHttp.Result.IsSuccessStatusCode, responseHttp.Result);
     }
 
     private async Task<T> UnserializeAnswer<T>(HttpResponseMessage responseHttp)
