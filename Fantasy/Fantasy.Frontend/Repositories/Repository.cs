@@ -21,8 +21,8 @@ public class Repository : IRepository
 
     public async Task<HttpResponseWrapper<object>> DeleteAsync(string url)
     {
-        var responseHttp = _httpClient.DeleteAsync(url);
-        return new HttpResponseWrapper<object>(null, !responseHttp.Result.IsSuccessStatusCode, responseHttp.Result);
+        var responseHttp = await _httpClient.DeleteAsync(url);
+        return new HttpResponseWrapper<object>(null, !responseHttp.IsSuccessStatusCode, responseHttp);
     }
 
     public async Task<HttpResponseWrapper<T>> GetAsync<T>(string url)
@@ -62,8 +62,8 @@ public class Repository : IRepository
     {
         var messageJson = JsonSerializer.Serialize(model);
         var messageContent = new StringContent(messageJson, Encoding.UTF8, "application/json");
-        var responseHttp = _httpClient.PutAsync(url, messageContent);
-        return new HttpResponseWrapper<object>(null, !responseHttp.Result.IsSuccessStatusCode, responseHttp.Result);
+        var responseHttp = await _httpClient.PutAsync(url, messageContent);
+        return new HttpResponseWrapper<object>(null, !responseHttp.IsSuccessStatusCode, responseHttp);
     }
 
     public async Task<HttpResponseWrapper<TActionResponse>> PutAsync<T, TActionResponse>(string url, T model)
